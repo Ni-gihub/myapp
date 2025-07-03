@@ -40,7 +40,8 @@ async function geocodeAddress(address) {
 async function drawRoute(start, end) {
   if (!start || !end) return;
 
-  const url ='https://api.openrouteservice.org/v2/directions/driving-car/geojson?language=ja';
+  const url =
+    'https://api.openrouteservice.org/v2/directions/driving-car/geojson?language=ja';
 
   const body = {
     coordinates: [
@@ -130,13 +131,4 @@ document.getElementById('search-btn').addEventListener('click', async () => {
   } catch (error) {
     alert('ジオコーディングエラー: ' + error.message);
   }
-});
-
-
-
-const sidebar = document.getElementById('sidebar');
-const toggleBtn = document.getElementById('toggle-sidebar');
-
-toggleBtn.addEventListener('click', () => {
-  sidebar.classList.toggle('collapsed');
 });
