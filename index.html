@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Leaflet ナビアプリ</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app-container">
+    <div id="sidebar">
+      <h2>ナビゲーション</h2>
+
+      <div>
+        <label for="start-input">スタート地点（住所）:</label>
+        <input type="text" id="start-input" placeholder="例: 東京駅" />
+      </div>
+
+      <div>
+        <label for="destination-input">目的地（住所）:</label>
+        <input type="text" id="destination-input" placeholder="例: 東京タワー" />
+      </div>
+
+      <button id="search-btn">検索</button>
+
+      <hr />
+
+      <div id="route-info">
+        <p><strong>距離:</strong> <span id="distance">-</span></p>
+        <p><strong>所要時間:</strong> <span id="duration">-</span></p>
+        <h3>案内：</h3>
+        <ul id="instructions"></ul>
+      </div>
+    </div>
+
+    <div id="map"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

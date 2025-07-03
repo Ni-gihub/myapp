@@ -1,0 +1,59 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: sans-serif;
+}
+
+#app-container {
+  display: flex;
+  height: 100vh;
+}
+
+#sidebar {
+  width: 320px;
+  padding: 1em;
+  background-color: #f4f4f4;
+  overflow-y: auto;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+#sidebar input[type='text'] {
+  width: 100%;
+  padding: 0.4em;
+  margin-bottom: 1em;
+  box-sizing: border-box;
+}
+
+#map {
+  flex: 1;
+}
+
+button {
+  padding: 0.5em 1em;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+#route-info ul {
+  padding-left: 1em;
+}
+
+
+@media (max-width: 600px) {
+  #app-container {
+    flex-direction: column;
+  }
+
+  #sidebar {
+    width: 100%;
+    height: 250px;
+    box-shadow: none;
+    overflow-y: auto;
+  }
+
+  #map {
+    height: calc(100vh - 250px);
+  }
+}
