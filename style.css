@@ -44,17 +44,20 @@ button {
 
 @media (max-width: 600px) {
   #app-container {
-    flex-direction: column !important;
+    flex-direction: column !important;  /* 縦並びに */
+    height: auto !important;             /* 高さ自動に */
+    min-height: 100vh !important;       /* 最低でも画面いっぱい */
   }
 
   #sidebar {
     width: 100% !important;
     height: 250px !important;
     box-shadow: none !important;
-    overflow-y: auto;
+    overflow-y: auto !important;
   }
 
   #map {
     height: calc(100vh - 250px) !important;
+    width: 100% !important;
   }
 }
