@@ -88,9 +88,36 @@ async function drawRoute(start, end) {
     const instructionList = document.getElementById('instructions');
     instructionList.innerHTML = '';
 
+    const translationMap = {
+      'Head northeast': '北東へ進む',
+      'Head northwest': '北西へ進む',
+      'Head southwest': '南西へ進む',
+      'Head southeast': '南東へ進む',
+      'Keep left': '左側を進む',
+      'Keep right': '右側を進む',
+      'Turn left': '左折',
+      'Turn right': '右折',
+      'Turn sharp left': '鋭角左折',
+      'Turn sharp right': '鋭角右折',
+      'Arrive at': '到着',
+      'onto': '→',
+      'on the left': '左側に',
+      'on the right': '右側に',
+      'your destination': '目的地',
+      'on': '',
+    };
+
     steps.forEach(step => {
+      let instr = step.instruction;
+
+     for (const [eng, jp] of Object.entries(translationMap)) {
+        if (instr.includes(eng)) {
+          instr = instr.replace(eng, jp);
+        }
+      }
+
       const li = document.createElement('li');
-      li.textContent = step.instruction;
+      li.textContent = instr;
       instructionList.appendChild(li);
     });
 
