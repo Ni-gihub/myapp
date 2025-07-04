@@ -230,28 +230,3 @@ document.querySelectorAll('#start-input, #destination-input').forEach(input => {
     }
   });
 });
-
-
-
-
-
-const sidebar = document.getElementById('sidebar');
-
-// つまみ（ハンドル）を追加
-const handle = document.createElement('div');
-handle.id = 'sidebar-handle';
-handle.textContent = 'メニュー';
-sidebar.appendChild(handle);
-
-// 開閉処理
-handle.addEventListener('click', () => {
-  const isOpen = sidebar.classList.toggle('active');
-  handle.textContent = isOpen ? '閉じる' : 'メニュー';
-});
-
-// 閉じるボタン（×）も連動でハンドルの表示を戻す
-const closeBtn = document.getElementById('close-sidebar-btn');
-closeBtn.addEventListener('click', () => {
-  sidebar.classList.remove('active');
-  handle.textContent = 'メニュー';
-});
