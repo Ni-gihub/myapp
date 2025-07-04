@@ -55,16 +55,6 @@ button {
   }
 
   #sidebar {
-    order: 2;
-    width: 100%;
-    max-height: 60vh;     /* 画面の60%以内に収める */
-    height: auto;         /* 内容に応じて高さを調整 */
-    overflow-y: auto;
-  }
-
-
-
-  #sidebar {
     position: absolute;
     bottom: -60vh; /* 初期状態で画面の下に隠れる */
     left: 0;
