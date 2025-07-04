@@ -44,10 +44,6 @@ button {
   padding-left: 1em;
 }
 
-#toggle-sidebar {
-    display: none;
-}
-
 
 @media (max-width: 600px) {
   #app-container {
@@ -64,5 +60,38 @@ button {
     max-height: 60vh;     /* 画面の60%以内に収める */
     height: auto;         /* 内容に応じて高さを調整 */
     overflow-y: auto;
+  }
+
+
+
+  #sidebar {
+    position: absolute;
+    bottom: -60vh; /* 初期状態で画面の下に隠れる */
+    left: 0;
+    right: 0;
+    height: 60vh;
+    background: #f4f4f4;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    transition: bottom 0.3s ease;
+    z-index: 1000;
+  }
+
+  #sidebar.active {
+    bottom: 0;
+  }
+
+  /* つまみ（メニュー/閉じる）ボタン */
+  #sidebar-handle {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1976d2;
+    color: #fff;
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    z-index: 1001;
   }
 }

@@ -23,6 +23,10 @@ const redIcon = L.icon({
   shadowSize: [41, 41]
 });
 
+// 座標保持用
+let startCoords = null;
+let destCoords = null;
+
 // 住所から座標を取得する関数（ジオコーディング）
 async function geocodeAddress(address) {
   const geocodeUrl = `https://api.openrouteservice.org/geocode/search?api_key=${API_KEY}&text=${encodeURIComponent(address)}`;
@@ -36,7 +40,7 @@ async function geocodeAddress(address) {
   return { lat: coords[1], lng: coords[0] };
 }
 
-// ルート描画関数
+// ルート描画関数（引数に座標オブジェクトを受け取る）
 async function drawRoute(start, end) {
   if (!start || !end) return;
 
@@ -100,35 +104,154 @@ async function drawRoute(start, end) {
   }
 }
 
-// 検索ボタンイベント
+// --- 住所入力補助（サジェスト）機能 ---
+// 入力欄に対してサジェストの<ul>要素を作成しDOMに追加
+function setupAutocomplete(inputId) {
+  const input = document.getElementById(inputId);
+  const suggestions = document.createElement('ul');
+  suggestions.style.position = 'absolute';
+  suggestions.style.backgroundColor = '#fff';
+  suggestions.style.border = '1px solid #ccc';
+  suggestions.style.listStyle = 'none';
+  suggestions.style.padding = '0';
+  suggestions.style.margin = '0';
+  suggestions.style.maxHeight = '150px';
+  suggestions.style.overflowY = 'auto';
+  suggestions.style.width = input.offsetWidth + 'px';
+  suggestions.style.zIndex = 1000;
+  suggestions.style.display = 'none';
+  input.parentNode.style.position = 'relative';
+  input.parentNode.appendChild(suggestions);
+
+  let selectedCoords = null;
+
+  input.addEventListener('input', async () => {
+    const query = input.value.trim();
+    if (!query) {
+      suggestions.innerHTML = '';
+      suggestions.style.display = 'none';
+      selectedCoords = null;
+      if (inputId === 'start-input') startCoords = null;
+      else if (inputId === 'destination-input') destCoords = null;
+      return;
+    }
+
+    const url = `https://api.openrouteservice.org/geocode/autocomplete?api_key=${API_KEY}&text=${encodeURIComponent(query)}&boundary.country=JP&size=5`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (!data.features || data.features.length === 0) {
+        suggestions.innerHTML = '';
+        suggestions.style.display = 'none';
+        selectedCoords = null;
+        if (inputId === 'start-input') startCoords = null;
+        else if (inputId === 'destination-input') destCoords = null;
+        return;
+      }
+
+      suggestions.innerHTML = data.features.map(f =>
+        `<li style="padding:5px; cursor:pointer;" data-lat="${f.geometry.coordinates[1]}" data-lng="${f.geometry.coordinates[0]}">${f.properties.label}</li>`
+      ).join('');
+      suggestions.style.display = 'block';
+
+      suggestions.querySelectorAll('li').forEach(li => {
+        li.addEventListener('click', () => {
+          input.value = li.textContent;
+          selectedCoords = {
+            lat: parseFloat(li.dataset.lat),
+            lng: parseFloat(li.dataset.lng)
+          };
+          if (inputId === 'start-input') startCoords = selectedCoords;
+          else if (inputId === 'destination-input') destCoords = selectedCoords;
+          suggestions.style.display = 'none';
+        });
+      });
+    } catch {
+      suggestions.innerHTML = '';
+      suggestions.style.display = 'none';
+      selectedCoords = null;
+      if (inputId === 'start-input') startCoords = null;
+      else if (inputId === 'destination-input') destCoords = null;
+    }
+  });
+
+  // リスト外クリックで非表示にする処理（任意）
+  document.addEventListener('click', (e) => {
+    if (!suggestions.contains(e.target) && e.target !== input) {
+      suggestions.style.display = 'none';
+    }
+  });
+}
+
+// 住所入力補助をスタート地点・目的地の入力欄にセットアップ
+setupAutocomplete('start-input');
+setupAutocomplete('destination-input');
+
+// 検索ボタンイベント（座標がセットされていればそれを使う）
 document.getElementById('search-btn').addEventListener('click', async () => {
-  const startText = document.getElementById('start-input').value.trim();
-  const destinationText = document.getElementById('destination-input').value.trim();
-
-  if (!startText || !destinationText) {
-    alert('スタート地点と目的地の両方を入力してください');
-    return;
-  }
-
   try {
-    // 座標取得
-    const startCoords = await geocodeAddress(startText);
-    const destCoords = await geocodeAddress(destinationText);
+    let start = startCoords;
+    let dest = destCoords;
 
-    // スタートマーカー更新
+    // 座標がない場合はテキストからジオコーディング
+    if (!start) {
+      const startText = document.getElementById('start-input').value.trim();
+      if (!startText) throw new Error('スタート地点を入力してください');
+      start = await geocodeAddress(startText);
+    }
+    if (!dest) {
+      const destText = document.getElementById('destination-input').value.trim();
+      if (!destText) throw new Error('目的地を入力してください');
+      dest = await geocodeAddress(destText);
+    }
+
+    // マーカー更新
     if (currentStartMarker) map.removeLayer(currentStartMarker);
-    currentStartMarker = L.marker(startCoords).addTo(map).bindPopup('スタート地点').openPopup();
+    currentStartMarker = L.marker(start).addTo(map).bindPopup('スタート地点').openPopup();
 
-    // 目的地マーカー更新（赤ピン）
     if (currentDestinationMarker) map.removeLayer(currentDestinationMarker);
-    currentDestinationMarker = L.marker(destCoords, { icon: redIcon })
-      .addTo(map)
-      .bindPopup('目的地')
-      .openPopup();
+    currentDestinationMarker = L.marker(dest, { icon: redIcon }).addTo(map).bindPopup('目的地').openPopup();
 
     // ルート描画
-    drawRoute(startCoords, destCoords);
+    drawRoute(start, dest);
+
   } catch (error) {
-    alert('ジオコーディングエラー: ' + error.message);
+    alert('エラー: ' + error.message);
   }
+});
+
+// Enterキーで検索ボタン押す
+document.querySelectorAll('#start-input, #destination-input').forEach(input => {
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      document.getElementById('search-btn').click();
+    }
+  });
+});
+
+
+
+
+
+const sidebar = document.getElementById('sidebar');
+
+// つまみ（ハンドル）を追加
+const handle = document.createElement('div');
+handle.id = 'sidebar-handle';
+handle.textContent = 'メニュー';
+sidebar.appendChild(handle);
+
+// 開閉処理
+handle.addEventListener('click', () => {
+  const isOpen = sidebar.classList.toggle('active');
+  handle.textContent = isOpen ? '閉じる' : 'メニュー';
+});
+
+// 閉じるボタン（×）も連動でハンドルの表示を戻す
+const closeBtn = document.getElementById('close-sidebar-btn');
+closeBtn.addEventListener('click', () => {
+  sidebar.classList.remove('active');
+  handle.textContent = 'メニュー';
 });
