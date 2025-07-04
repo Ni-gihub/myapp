@@ -44,6 +44,10 @@ button {
   padding-left: 1em;
 }
 
+#toggle-sidebar {
+    display: none;
+}
+
 
 @media (max-width: 600px) {
   #app-container {
@@ -61,36 +65,4 @@ button {
     height: auto;         /* 内容に応じて高さを調整 */
     overflow-y: auto;
   }
-
-
-
-  /* サイドバー開閉用トグルボタン */
-#toggle-sidebar {
-  position: fixed;
-  bottom: 260px; /* サイドバーの高さに応じて調整 */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1001;
-  background: #333;
-  color: white;
-  padding: 0.5em 1em;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* 初期状態：閉じた状態（高さ0） */
-#sidebar.collapsed {
-  height: 0;
-  overflow: hidden;
-  padding: 0;
-  transition: height 0.3s ease;
-}
-
-/* 展開状態（開いている） */
-#sidebar.expanded {
-  height: 250px;
-  overflow-y: auto;
-  transition: height 0.3s ease;
-}
 }

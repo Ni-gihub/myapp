@@ -132,16 +132,3 @@ document.getElementById('search-btn').addEventListener('click', async () => {
     alert('ジオコーディングエラー: ' + error.message);
   }
 });
-
-
-
-const sidebar = document.getElementById("sidebar");
-const toggleBtn = document.getElementById("toggle-sidebar");
-
-let isOpen = false;
-
-toggleBtn.addEventListener("click", () => {
-  isOpen = !isOpen;
-  sidebar.className = isOpen ? "expanded" : "collapsed";
-  toggleBtn.textContent = isOpen ? "▼ 閉じる" : "▲ メニュー";
-});
